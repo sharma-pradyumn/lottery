@@ -12,5 +12,4 @@ Details:
 /customers/set_ticket/<int:id> : For a customer with customer_id as id, it set a raffle ticket for the customer for the next upcoming draw
 
 /customers/<int:id> : Shows all the details of the customer having customer_id as id and returns a  json object.
-  
-                      A 'PUT' request along with a json object can be used to update the details of any customer.
+                     A 'PUT' request along with a json object can be used to update the details of any customer.
