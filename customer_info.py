@@ -54,10 +54,9 @@ class Customer(db.Model):
 		return [Customer.json(customer) for customer in Customer.query.all()]
 
 	def get_random_customer():
-		# total_entries= db.session.query(Customer).count()
-		# winner_id=randint(1,total_entries)
-		# return [Customer.json(Customer.query.filter_by(id=winner_id).first())]
 		eligible_customers=Customer.query.filter_by(ticket=1)
+		if len((list(eligible_customers)))==0:
+			return "No customer had a ticket"
 		winner_customer=random.choice(list(eligible_customers))
 		winner_name=winner_customer.name
 		Winner.add_winner(winner_name)
@@ -71,7 +70,11 @@ class Customer(db.Model):
 
 	def get_customer(_id):
 		'''function to get customer using the id of the customer as parameter'''
-		return [Customer.json(Customer.query.filter_by(id=_id).first())]
+		query=Customer.query.filter_by(id=_id).first()
+		if (query is None):
+			return "No customer of given id was found"
+		return [Customer.json(query)]
+
 		# Customer.json() coverts our output to the json format defined earlier
 		# the filter_by method filters the query by the id
 		# since our id is unique we will only get one result

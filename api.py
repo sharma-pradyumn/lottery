@@ -1,9 +1,6 @@
-'''
-TODO : Reset ticket after each draw
-'''
-
 from customer_info import *
-
+import datetime 
+import random
 
 # route to get all customers
 @app.route('/customers', methods=['GET'])
@@ -30,8 +27,10 @@ def get_customer_by_id(id):
     return_value = Customer.get_customer(id)
     return jsonify(return_value)
 
-@app.route('/customers/set_ticket/<int:id>', methods=['GET'])
-def set_customer_ticket_by_id(id):
+@app.route('/customers/set_ticket', methods=['POST'])
+def set_customer_ticket_by_id():
+    request_data = request.get_json()
+    id=request_data['id']
     Customer.set_ticket(id)
     response = Response("Ticket set for "+str(id), 201, mimetype='application/json')
     return response
@@ -42,7 +41,10 @@ def set_customer_ticket_by_id(id):
 def add_customer():
     '''Function to add new customer to our database'''
     request_data = request.get_json()  # getting data from client
-    Customer.add_customer(request_data["name"], request_data["ticket"])
+    if (request_data is None):
+        response = Response("Please send data of customer to add in JSON", 201, mimetype='application/json')
+        return response
+    Customer.add_customer(request_data["name"],0)
     response = Response("Customer added", 201, mimetype='application/json')
     return response
 
@@ -51,9 +53,29 @@ def add_customer():
 def update_customer(id):
     '''Function to edit customer in our database using customer id'''
     request_data = request.get_json()
+    if (request_data is None):
+        response = Response("Please send details of customer to update in JSON", 201, mimetype='application/json')
+        return response
     Customer.update_customer(id, request_data['name'], request_data['ticket'])
     response = Response("Customer Updated", status=200, mimetype='application/json')
     return response
+
+@app.route('/customers/next_draw', methods=['GET'])
+def next_draw():
+    '''Returns tommorows date and 10 AM as the next draw time '''
+    tommorow=datetime.date.today()+datetime.timedelta(days = 1)
+    tommorow=tommorow.strftime('%d-%m-%Y')+" at 10 AM" 
+    return jsonify({'Next Draw':tommorow})
+
+@app.route('/customers/next_reward', methods=['GET'])
+def next_reward():
+    '''Returns tommorows reward. Reward is chosen randomly from a list of
+        potential records.
+     '''
+
+    rewards=['Washing Machine','Mobile Phone','Electric Kettle']
+    return jsonify({'Next Reward':random.choices(rewards)})
+    
 
 # # route to delete customer using the DELETE method
 # @app.route('/customers/<int:id>', methods=['DELETE'])
