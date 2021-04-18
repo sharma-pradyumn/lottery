@@ -1,5 +1,6 @@
 # lottery
 Flask API for a lottery draw. It uses Flask SQLAlchemy for database.
+Run the api.py
 
 Details: 
 
